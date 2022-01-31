@@ -7,10 +7,10 @@ import android.os.Bundle
 import android.util.DisplayMetrics
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.test.newsapp.R
+import com.test.newsapp.databinding.ActivityLoginBinding
 import com.test.newsapp.databinding.SplashMainBinding
 import com.test.newsapp.login.viewmodel.SplashViewModel
 import com.test.newsapp.news.ui.NewsActivity
@@ -57,7 +57,9 @@ class SplashActivity : AppCompatActivity() {
 
 
     private fun intializeMembers() {
-        mBinding = DataBindingUtil.setContentView(this, R.layout.splash_main)
+        mBinding = SplashMainBinding.inflate(layoutInflater)
+        val view = mBinding.root
+        setContentView(view)
         mSplashViewModel = ViewModelProvider(this).get(SplashViewModel::class.java)
         mSessionManager = SessionManager.getInstance(application)
         mCommonUtils = CommonUtils()
