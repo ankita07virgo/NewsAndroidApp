@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">NewsApp</string>
+    <string name="pleasewait">Please Wait..</string>
+    <string name="login">Login</string>
+    <string name="username">username</string>
+    <string name="password">password</string>
 </resources>
