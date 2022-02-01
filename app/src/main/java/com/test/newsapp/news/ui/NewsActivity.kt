@@ -4,55 +4,104 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
-import androidx.recyclerview.widget.DividerItemDecoration
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
+import com.test.newsapp.R
 import com.test.newsapp.databinding.ActivityNewsBinding
-import com.test.newsapp.news.adapter.NewsAdapter
-import com.test.newsapp.news.model.NewsBase
+import com.test.newsapp.news.adapter.News_Adapter
 import com.test.newsapp.news.model.newsList
 import com.test.newsapp.news.viewmodel.NewsViewModel
 import com.test.newsapp.news.viewmodel.ViewModelFactory
 import com.test.newsapp.retrofit.ApiHelper
 import com.test.newsapp.retrofit.RetrofitBuilder
+import com.test.newsapp.roomdatabase.NewsDataBaseViewModel
+import com.test.newsapp.roomdatabase.NewsDataBaseViewModelFactory
+import com.test.newsapp.roomdatabase.NewsEntity
+import com.test.newsapp.utils.ApplicationClass
+import com.test.newsapp.utils.CommonUtils
+import com.test.newsapp.utils.Connection
 import com.test.newsapp.utils.Status
 
 class NewsActivity : AppCompatActivity() {
     private lateinit var mBinding : ActivityNewsBinding
     private lateinit var mViewModel : NewsViewModel
-    private lateinit var adapter :NewsAdapter
+    private lateinit var adapter :News_Adapter
+    private lateinit var mCommonUtils: CommonUtils
+    private val mNewsDBViewModel: NewsDataBaseViewModel by viewModels {
+        NewsDataBaseViewModelFactory((application as ApplicationClass).repository)
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         intializeView()
+        intializeMembers()
         setupViewModel()
         setupUI()
         setupObservers()
     }
 
+    private fun intializeMembers() {
+        mCommonUtils = CommonUtils()
+    }
+
     private fun setupObservers() {
-        mViewModel.getNewsList().observe(this, Observer {
-            it?.let { resource ->
-                when (resource.status) {
-                    Status.SUCCESS -> {
-                        mBinding.recyclerView.visibility = View.VISIBLE
-                        mBinding.progressBar.visibility = View.GONE
-                        resource?.data?.let { newsBase -> retrieveList(newsBase.results) }
-                    }
-                    Status.ERROR -> {
-                        mBinding.recyclerView.visibility = View.VISIBLE
-                        mBinding.progressBar.visibility = View.GONE
-                        Toast.makeText(this, it.message, Toast.LENGTH_LONG).show()
-                    }
-                    Status.LOADING -> {
-                        mBinding.progressBar.visibility = View.VISIBLE
-                        mBinding.recyclerView.visibility = View.GONE
+        if (Connection.getInstance().isNetworkAvailable(this)) {
+            mViewModel.getNewsList().observe(this, Observer {
+                it?.let { resource ->
+                    when (resource.status) {
+                        Status.SUCCESS -> {
+                            mBinding.viewpager.visibility = View.VISIBLE
+                            mBinding.progressBar.visibility = View.GONE
+                            resource.data?.results?.let {
+                                for (newsModel in it) {
+                                    val newsEntity = NewsEntity(0,newsModel.title,newsModel.description,newsModel.image_url)
+                                    mNewsDBViewModel.insert(newsEntity)
+                                }
+                            }
+
+                            resource?.data?.let { newsBase -> retrieveList(newsBase.results) }
+                        }
+                        Status.ERROR -> {
+                            mBinding.viewpager.visibility = View.VISIBLE
+                            mBinding.progressBar.visibility = View.GONE
+                            Toast.makeText(this, it.message, Toast.LENGTH_LONG).show()
+                        }
+                        Status.LOADING -> {
+                            mBinding.progressBar.visibility = View.VISIBLE
+                            mBinding.viewpager.visibility = View.GONE
+                        }
                     }
                 }
+            })
+        }
+            else{
+                mCommonUtils.showAlert(
+            2000,
+            resources.getString(R.string.no_internet_connection),
+            resources.getString(R.string.not_connected_to_internet),
+            R.drawable.wrong_icon,
+            R.color.notiFailColor,
+            this
+        )
+            // Add an observer on the LiveData returned by getAlphabetizedWords.
+            // The onChanged() method fires when the observed data changes and the activity is
+            // in the foreground.
+            mNewsDBViewModel.allNews.observe(this) { news ->
+                // Update the cached copy of the news in the adapter.
+                news.let {
+                    val mList = arrayListOf<newsList>()
+                    for (newsEntity in it) {
+                        val newsModel = newsList(newsEntity.title,newsEntity.description,newsEntity.image_url)
+                        mList.add(newsModel)
+                    }
+                    retrieveList(mList)
+                }
             }
-        })
+            mBinding.progressBar.visibility = View.GONE
+        }
     }
+
+
 
     private fun retrieveList(news: List<newsList>) {
         adapter.apply {
@@ -62,15 +111,11 @@ class NewsActivity : AppCompatActivity() {
     }
 
     private fun setupUI() {
-        mBinding.recyclerView.layoutManager = LinearLayoutManager(this)
-        adapter = NewsAdapter(arrayListOf())
-        mBinding.recyclerView.addItemDecoration(
-            DividerItemDecoration(
-                mBinding.recyclerView.context,
-                (mBinding.recyclerView.layoutManager as LinearLayoutManager).orientation
-            )
+
+        adapter = News_Adapter(
+            supportFragmentManager, arrayListOf()
         )
-        mBinding.recyclerView.adapter = adapter
+        mBinding.viewpager.adapter = adapter
     }
 
     private fun setupViewModel() {

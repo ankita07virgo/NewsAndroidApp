@@ -7,7 +7,9 @@ import com.test.newsapp.retrofit.ApiHelper
 
 class ViewModelFactory(private val apiHelper: ApiHelper) : ViewModelProvider.Factory {
 
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+
+
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(NewsViewModel::class.java)) {
             return NewsViewModel(NewsRepository(apiHelper)) as T
         }
