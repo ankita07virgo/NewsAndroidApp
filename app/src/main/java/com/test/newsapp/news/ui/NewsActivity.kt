@@ -10,14 +10,13 @@ import androidx.lifecycle.ViewModelProviders
 import com.test.newsapp.R
 import com.test.newsapp.databinding.ActivityNewsBinding
 import com.test.newsapp.news.adapter.News_Adapter
-import com.test.newsapp.news.model.newsList
+import com.test.newsapp.news.model.NewsBase
 import com.test.newsapp.news.viewmodel.NewsViewModel
 import com.test.newsapp.news.viewmodel.ViewModelFactory
 import com.test.newsapp.retrofit.ApiHelper
 import com.test.newsapp.retrofit.RetrofitBuilder
 import com.test.newsapp.roomdatabase.NewsDataBaseViewModel
 import com.test.newsapp.roomdatabase.NewsDataBaseViewModelFactory
-import com.test.newsapp.roomdatabase.NewsEntity
 import com.test.newsapp.utils.ApplicationClass
 import com.test.newsapp.utils.CommonUtils
 import com.test.newsapp.utils.Connection
@@ -54,12 +53,12 @@ class NewsActivity : AppCompatActivity() {
                             mBinding.progressBar.visibility = View.GONE
                             resource.data?.results?.let {
                                 for (newsModel in it) {
-                                    val newsEntity = NewsEntity(0,newsModel.title,newsModel.description,newsModel.image_url)
-                                    mNewsDBViewModel.insert(newsEntity)
+                                    //val newsEntity = NewsEntity(0,newsModel.title,newsModel.description,newsModel.image_url)
+                                    mNewsDBViewModel.insert(newsModel)
                                 }
                             }
 
-                            resource?.data?.let { newsBase -> retrieveList(newsBase.results) }
+                            resource.data?.let { newsBase -> retrieveList(newsBase.results) }
                         }
                         Status.ERROR -> {
                             mBinding.viewpager.visibility = View.VISIBLE
@@ -89,12 +88,13 @@ class NewsActivity : AppCompatActivity() {
             mNewsDBViewModel.allNews.observe(this) { news ->
                 // Update the cached copy of the news in the adapter.
                 news.let {
-                    val mList = arrayListOf<newsList>()
+                    /*val mList = arrayListOf< NewsBase.resultList>()
                     for (newsEntity in it) {
                         val newsModel = newsList(newsEntity.title,newsEntity.description,newsEntity.image_url)
                         mList.add(newsModel)
-                    }
-                    retrieveList(mList)
+                    }*/
+                    mBinding.viewpager.visibility = View.VISIBLE
+                    retrieveList(it)
                 }
             }
             mBinding.progressBar.visibility = View.GONE
@@ -103,7 +103,7 @@ class NewsActivity : AppCompatActivity() {
 
 
 
-    private fun retrieveList(news: List<newsList>) {
+    private fun retrieveList(news: List<NewsBase.resultList>) {
         adapter.apply {
             addNews(news)
             notifyDataSetChanged()

@@ -9,4 +9,6 @@
     <color name="white">#FFFFFFFF</color>
     <color name="appcolor">#CC0000</color>
     <color name="textcolor">#696969</color>
+    <color name="notiSuccessColor">#24a903</color>
+    <color name="notiFailColor">#f4000c</color>
 </resources>

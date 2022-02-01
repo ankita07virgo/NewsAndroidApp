@@ -1,7 +1,6 @@
 package com.test.newsapp.retrofit
 
 import com.test.newsapp.news.model.NewsBase
-import com.test.newsapp.news.model.newsList
 import retrofit2.http.GET
 
 interface ApiService {

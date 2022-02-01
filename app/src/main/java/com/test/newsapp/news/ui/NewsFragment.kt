@@ -6,9 +6,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.bumptech.glide.Glide
-import com.test.newsapp.R
 import com.test.newsapp.databinding.FragmentNewsBinding
-import com.test.newsapp.news.model.newsList
+import com.test.newsapp.news.model.NewsBase
 
 private const val ARG_NewsModel = "newsModel"
 private var _binding: FragmentNewsBinding? = null
@@ -17,7 +16,7 @@ private var _binding: FragmentNewsBinding? = null
 private val binding get() = _binding!!
 
 class NewsFragment : Fragment() {
-    private lateinit  var newsModel: newsList
+    private lateinit  var newsModel: NewsBase.resultList
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,7 +46,7 @@ class NewsFragment : Fragment() {
 
     companion object {
         @JvmStatic
-        fun newInstance(newsList: newsList) =
+        fun newInstance(newsList: NewsBase.resultList) =
             NewsFragment().apply {
                 arguments = Bundle().apply {
                     putParcelable(ARG_NewsModel, newsList)
