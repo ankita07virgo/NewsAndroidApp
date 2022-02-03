@@ -14,15 +14,7 @@ abstract class NewsRoomDatabase : RoomDatabase() {
 
     abstract fun newsDAO(): NewsDAO
 
-    private class NewsDatabaseCallback(
-        private val scope: CoroutineScope
-    ) : RoomDatabase.Callback() {
 
-        override fun onCreate(db: SupportSQLiteDatabase) {
-            super.onCreate(db)
-
-        }
-    }
 
     companion object {
         @Volatile
@@ -40,7 +32,6 @@ abstract class NewsRoomDatabase : RoomDatabase() {
                     NewsRoomDatabase::class.java,
                     "room_database"
                 )
-                    .addCallback(NewsDatabaseCallback(scope))
                     .build()
                 INSTANCE = instance
                 // return instance

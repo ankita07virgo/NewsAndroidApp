@@ -33,9 +33,8 @@ class News_Adapter(
     }
 
 
-    override fun getCount(): Int {
-        return newsList.size
-    }
+    override fun getCount() =  newsList.size
+
 
     override fun getItem(position: Int): Fragment {
         return NewsFragment.newInstance(newsList[position])

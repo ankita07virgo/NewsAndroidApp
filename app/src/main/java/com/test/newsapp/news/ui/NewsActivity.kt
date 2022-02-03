@@ -82,22 +82,25 @@ class NewsActivity : AppCompatActivity() {
             R.color.notiFailColor,
             this
         )
-            // Add an observer on the LiveData returned by getAlphabetizedWords.
-            // The onChanged() method fires when the observed data changes and the activity is
-            // in the foreground.
-            mNewsDBViewModel.allNews.observe(this) { news ->
-                // Update the cached copy of the news in the adapter.
-                news.let {
-                    /*val mList = arrayListOf< NewsBase.resultList>()
-                    for (newsEntity in it) {
-                        val newsModel = newsList(newsEntity.title,newsEntity.description,newsEntity.image_url)
-                        mList.add(newsModel)
-                    }*/
-                    mBinding.viewpager.visibility = View.VISIBLE
-                    retrieveList(it)
+            mNewsDBViewModel.getNewsList().observe(this, {
+                when (it.status) {
+                    Status.SUCCESS -> {
+                        mBinding.progressBar.visibility = View.GONE
+                        it.data?.let { newsList -> retrieveList(newsList) }
+                        mBinding.viewpager.visibility = View.VISIBLE
+                    }
+                    Status.LOADING -> {
+                        mBinding.progressBar.visibility = View.VISIBLE
+                        mBinding.viewpager.visibility = View.GONE
+                    }
+                    Status.ERROR -> {
+                        //Handle Error
+                        mBinding.progressBar.visibility = View.GONE
+                        Toast.makeText(this, it.message, Toast.LENGTH_LONG).show()
+                    }
                 }
-            }
-            mBinding.progressBar.visibility = View.GONE
+            })
+
         }
     }
 

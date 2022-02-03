@@ -1,6 +1,7 @@
 package com.test.newsapp.roomdatabase
 
 import androidx.annotation.WorkerThread
+import androidx.lifecycle.LiveData
 import com.test.newsapp.news.model.NewsBase
 import kotlinx.coroutines.flow.Flow
 
@@ -21,5 +22,6 @@ class NewsRepository(private val newsDAO: NewsDAO) {
 
     // Room executes all queries on a separate thread.
     // Observed Flow will notify the observer when the data has changed.
-    val allNews: Flow<List<NewsBase.resultList>> = newsDAO.getAllNews()
+    //val allNews: Flow<List<NewsBase.resultList>> = newsDAO.getAllNews()
+     suspend fun getAllNews(): List<NewsBase.resultList> = newsDAO.getAllNews()
 }
