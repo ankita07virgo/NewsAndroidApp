@@ -22,6 +22,12 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
+
+        debug {
+            buildConfigField "String","BASE_URL","\"https://newsdata.io/api/\""
+            buildConfigField "String","API_KEY","\"pub_39584661b12b3ac98b29f48974e8e3f17145\""
+        }
+
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8

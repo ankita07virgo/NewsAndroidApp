@@ -37,6 +37,7 @@ class LoginActivity : AppCompatActivity() {
             mSessionManager.setUserLoginDetailModel(mLoginModel)
             val intent : Intent = Intent(this,NewsActivity::class.java)
             startActivity(intent)
+            finish()
         }
 
     }

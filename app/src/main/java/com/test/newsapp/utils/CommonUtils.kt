@@ -48,14 +48,7 @@ class CommonUtils {
 
 
 
-    interface APIURL {
 
-        companion object {
-            const val NEWS_LIST: String ="getNewsByCategoryId"
-            const val BASE_URL: String = "http://198.12.156.249:45001/gist/api/gist/"
-
-        }
-    }
 
     interface ProgressDialog {
         companion object {
