@@ -50,10 +50,9 @@ class NewsActivity : AppCompatActivity() {
                     when (resource.status) {
                         Status.SUCCESS -> {
                             mBinding.viewpager.visibility = View.VISIBLE
-                            mBinding.progressBar.visibility = View.GONE
+                            mCommonUtils.dismissProgress()
                             resource.data?.results?.let {
                                 for (newsModel in it) {
-                                    //val newsEntity = NewsEntity(0,newsModel.title,newsModel.description,newsModel.image_url)
                                     mNewsDBViewModel.insert(newsModel)
                                 }
                             }
@@ -62,11 +61,11 @@ class NewsActivity : AppCompatActivity() {
                         }
                         Status.ERROR -> {
                             mBinding.viewpager.visibility = View.VISIBLE
-                            mBinding.progressBar.visibility = View.GONE
+                            mCommonUtils.dismissProgress()
                             Toast.makeText(this, it.message, Toast.LENGTH_LONG).show()
                         }
                         Status.LOADING -> {
-                            mBinding.progressBar.visibility = View.VISIBLE
+                            mCommonUtils.showProgress(this)
                             mBinding.viewpager.visibility = View.GONE
                         }
                     }
@@ -85,17 +84,22 @@ class NewsActivity : AppCompatActivity() {
             mNewsDBViewModel.getNewsList().observe(this, {
                 when (it.status) {
                     Status.SUCCESS -> {
-                        mBinding.progressBar.visibility = View.GONE
-                        it.data?.let { newsList -> retrieveList(newsList) }
-                        mBinding.viewpager.visibility = View.VISIBLE
+                        mCommonUtils.dismissProgress()
+                        if(it.data?.isEmpty() == true){
+                            mCommonUtils.ToastPrint(this,resources.getString(R.string.access_app_first_time_offline_mode))
+                        }
+                        else {
+                            it.data?.let { newsList -> retrieveList(newsList) }
+                            mBinding.viewpager.visibility = View.VISIBLE
+                        }
                     }
                     Status.LOADING -> {
-                        mBinding.progressBar.visibility = View.VISIBLE
+                        mCommonUtils.showProgress(this)
                         mBinding.viewpager.visibility = View.GONE
                     }
                     Status.ERROR -> {
                         //Handle Error
-                        mBinding.progressBar.visibility = View.GONE
+                        mCommonUtils.dismissProgress()
                         Toast.makeText(this, it.message, Toast.LENGTH_LONG).show()
                     }
                 }

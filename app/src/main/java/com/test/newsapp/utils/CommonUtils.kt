@@ -73,7 +73,7 @@ class CommonUtils {
             .show()
     }
 
-    fun showProgress(message: String?, context: Context) {
+    fun showProgress( context: Context) {
         mSessionManager = SessionManager.getInstance(context)!!
         mCommonUtils = CommonUtils()
 
